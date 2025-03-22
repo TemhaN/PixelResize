@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Пиксель-арт в плавное растровое изображение</title>
+		<style>
+			body {
+				font-family: 'Arial', sans-serif;
+				margin: 0;
+				padding: 15px;
+				transition: background 0.3s, color 0.3s;
+			}
+
+			body.light {
+				background: #f0f2f5;
+				color: #333;
+			}
+
+			body.dark {
+				background: #1a1a1a;
+				color: #e0e0e0;
+			}
+
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 20px;
+				border-radius: 12px;
+				transition: background 0.3s;
+			}
+
+			.light .container {
+				background: #ffffff;
+			}
+
+			.dark .container {
+				background: #2c2c2c;
+			}
+
+			.header {
+				text-align: center;
+				margin-bottom: 25px;
+				font-size: 1.8em;
+				font-weight: 600;
+			}
+
+			.theme-toggle {
+				text-align: right;
+				margin-bottom: 15px;
+			}
+
+			.theme-toggle button {
+				background: none;
+				border: 1px solid #007bff;
+				color: #007bff;
+				padding: 8px 15px;
+				border-radius: 20px;
+				cursor: pointer;
+				transition: background 0.3s, color 0.3s;
+			}
+
+			.dark .theme-toggle button {
+				border-color: #66b3ff;
+				color: #fafafa;
+			}
+
+			.theme-toggle button:hover {
+				background: #007bff;
+				color: #fff;
+			}
+
+			.dark .theme-toggle button:hover {
+				background: #66b3ff;
+			}
+
+			.controls {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				gap: 15px;
+				padding: 15px;
+				border-radius: 15px;
+				transition: background 0.3s;
+				margin-bottom: 15px;
+			}
+
+			.light .controls {
+				background: #fafafa;
+			}
+
+			.dark .controls {
+				background: #3a3a3a;
+			}
+
+			input[type='file'] {
+				position: relative;
+				border: 1px solid #ddd;
+				margin: 0 auto;
+				align-items: center;
+				display: flex;
+				border-radius: 15px;
+				width: 399px;
+				padding: 10px;
+				background: #fff;
+				font-size: 1em;
+				transition: border 0.3s;
+			}
+			input[type='file']::file-selector-button {
+				width: 136px;
+				color: transparent;
+			}
+
+			input[type='file']::before {
+				position: absolute;
+				pointer-events: none;
+				top: 20px;
+				left: 16px;
+				height: 20px;
+				width: 20px;
+				content: '';
+				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230964B0'%3E%3Cpath d='M18 15v3H6v-3H4v3c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3h-2zM7 9l1.41 1.41L11 7.83V16h2V7.83l2.59 2.58L17 9l-5-5-5 5z'/%3E%3C/svg%3E");
+			}
+
+			input[type='file']::after {
+				position: absolute;
+				pointer-events: none;
+				top: 22px;
+				left: 40px;
+				color: #0964b0;
+				content: 'Выберите файл';
+			}
+
+			input[type='file']::file-selector-button {
+				border-radius: 7px;
+				padding: 0 16px;
+				height: 40px;
+				width: 175px;
+				cursor: pointer;
+				background-color: white;
+				border: 0px;
+				margin-right: 16px;
+				transition: background-color 200ms;
+			}
+
+			input[type='file']::file-selector-button:hover {
+				background-color: #ebf6fa;
+			}
+
+			input[type='file']::file-selector-button:active {
+				background-color: #e5e7eb;
+			}
+
+			.dark input[type='file'] {
+				background: #4a4a4a;
+				border-color: #666;
+				color: #e0e0e0;
+			}
+
+			.dark input[type='file']::file-selector-button:hover {
+				background-color: #464e5e;
+			}
+
+			.dark input[type='file']::before {
+				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234da8ff'%3E%3Cpath d='M18 15v3H6v-3H4v3c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3h-2zM7 9l1.41 1.41L11 7.83V16h2V7.83l2.59 2.58L17 9l-5-5-5 5z'/%3E%3C/svg%3E");
+			}
+
+			.dark input[type='file']::after {
+				position: absolute;
+				pointer-events: none;
+				top: 22px;
+				left: 40px;
+				color: #fafafa;
+				content: 'Выберите файл';
+			}
+
+			.dark input[type='file']::file-selector-button {
+				background-color: #464e5e;
+			}
+
+			.dark input[type='file']::file-selector-button:active {
+				background-color: #4a4a4a;
+			}
+
+			button {
+				padding: 12px 15px;
+				background: #007bff;
+				color: #fff;
+				border: none;
+				width: 170px;
+				border-radius: 20px;
+				cursor: pointer;
+				font-size: 1em;
+				font-weight: 500;
+				transition: background 0.3s;
+			}
+
+			button:hover {
+				background: #0056b3;
+			}
+
+			.dark button {
+				background: #66b3ff;
+			}
+
+			.dark button:hover {
+				background: #4d99e6;
+			}
+
+			.canvas-container {
+				display: flex;
+				flex-direction: column;
+				margin-bottom: 20px;
+			}
+
+			.canvas-wrapper {
+				text-align: center;
+			}
+
+			#originalCanvas,
+			#processedCanvas {
+				width: 100%;
+				transition: 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+				max-width: 500px;
+				width: 400px;
+				height: auto;
+				border-radius: 15px;
+			}
+
+			#originalCanvas:hover {
+				box-shadow: 0 5px 15px rgba(61, 110, 243, 0.1);
+			}
+
+			#processedCanvas:hover {
+				box-shadow: 0 5px 15px rgba(61, 110, 243, 0.1);
+			}
+
+			#originalCanvas {
+				image-rendering: pixelated;
+			}
+
+			.dark #originalCanvas:hover {
+				box-shadow: 0 5px 15px rgba(94, 94, 94, 0.1);
+			}
+
+			.dark #processedCanvas:hover {
+				box-shadow: 0 5px 15px rgba(94, 94, 94, 0.1);
+			}
+			.progress {
+				text-align: center;
+				font-size: 0.9em;
+				transition: color 0.3s;
+			}
+
+			.light .progress {
+				color: #666;
+			}
+
+			.dark .progress {
+				color: #bbb;
+			}
+
+			@media (max-width: 768px) {
+				.header {
+					font-size: 1.5em;
+				}
+
+				.container {
+					padding: 15px;
+				}
+
+				.controls {
+					padding: 10px;
+				}
+
+				input[type='file'],
+				button {
+					font-size: 0.9em;
+					padding: 10px;
+				}
+
+				#originalCanvas,
+				#processedCanvas {
+					width: 400px;
+					max-width: 100%;
+				}
+
+				.theme-toggle button {
+					padding: 6px 12px;
+					font-size: 0.9em;
+				}
+				input[type='file'] {
+					width: 320px;
+				}
+			}
+
+			@media (min-width: 769px) {
+				.canvas-container {
+					flex-direction: row;
+					justify-content: space-between;
+				}
+			}
+		</style>
+	</head>
+	<body class="light">
+		<div class="container">
+			<div class="theme-toggle">
+				<button id="themeButton">Тёмная тема</button>
+			</div>
+			<h1 class="header">Пиксель-арт в плавное растровое изображение</h1>
+			<div class="controls">
+				<input type="file" id="imageInput" accept="image/*" />
+				<button id="processButton">Начать обработку</button>
+			</div>
+			<div class="canvas-container">
+				<div class="canvas-wrapper">
+					<canvas id="originalCanvas"></canvas>
+					<p>Исходное</p>
+				</div>
+				<div class="canvas-wrapper">
+					<canvas id="processedCanvas"></canvas>
+					<p>Обработанное</p>
+				</div>
+			</div>
+			<div class="progress" id="progress">Обработка: ожидание...</div>
+		</div>
+
+		<script>
+			const body = document.body;
+			const themeButton = document.getElementById('themeButton');
+			themeButton.addEventListener('click', () => {
+				if (body.classList.contains('light')) {
+					body.classList.remove('light');
+					body.classList.add('dark');
+					themeButton.textContent = 'Светлая тема';
+				} else {
+					body.classList.remove('dark');
+					body.classList.add('light');
+					themeButton.textContent = 'Тёмная тема';
+				}
+			});
+
+			class ImageProcessor {
+				constructor(originalCanvasId, processedCanvasId) {
+					this.originalCanvas = document.getElementById(originalCanvasId);
+					this.processedCanvas = document.getElementById(processedCanvasId);
+					this.originalCtx = this.originalCanvas.getContext('2d');
+					this.processedCtx = this.processedCanvas.getContext('2d');
+					this.originalData = null;
+					this.worker = null;
+					this.progressElement = document.getElementById('progress');
+					this.setupEventListeners();
+				}
+
+				setupEventListeners() {
+					document
+						.getElementById('imageInput')
+						.addEventListener('change', e => this.loadImage(e.target.files[0]));
+					document
+						.getElementById('processButton')
+						.addEventListener('click', () => this.startProcessing());
+				}
+
+				loadImage(file) {
+					if (!file) {
+						this.progressElement.textContent = 'No file selected';
+						console.error('No file selected');
+						return;
+					}
+					const img = new Image();
+					img.onload = () => {
+						this.originalCanvas.width = img.width;
+						this.originalCanvas.height = img.height;
+						this.processedCanvas.width = img.width * 4;
+						this.processedCanvas.height = img.height * 4;
+						this.originalCtx.imageSmoothingEnabled = false;
+						this.originalCtx.drawImage(img, 0, 0);
+						this.originalData = this.originalCtx.getImageData(
+							0,
+							0,
+							img.width,
+							img.height
+						);
+						this.processedCtx.fillStyle = '#fff';
+						this.processedCtx.fillRect(
+							0,
+							0,
+							this.processedCanvas.width,
+							this.processedCanvas.height
+						);
+						this.progressElement.textContent = `Изображение загружено: ${img.width}x${img.height}`;
+						console.log(`Изображение загружено: ${img.width}x${img.height}`);
+					};
+					img.onerror = () => {
+						this.progressElement.textContent = 'Error loading image';
+						console.error('Failed to load image');
+					};
+					img.src = URL.createObjectURL(file);
+				}
+
+				startProcessing() {
+					if (!this.originalData) {
+						this.progressElement.textContent = 'Error: No image loaded';
+						console.error('No image data available');
+						return;
+					}
+
+					console.log('Начало Обработки...');
+					if (this.worker) this.worker.terminate();
+					this.worker = new Worker(
+						URL.createObjectURL(
+							new Blob(
+								[
+									`
+			            function colorSegmentation(imageData) {
+			                console.log('Starting color segmentation...');
+			                const width = imageData.width;
+			                const height = imageData.height;
+			                const data = new Uint8ClampedArray(imageData.data);
+			                const segments = new Uint32Array(width * height);
+			                let segmentId = 1;
+
+			                function getColor(x, y) {
+			                    x = Math.min(Math.max(x, 0), width - 1);
+			                    y = Math.min(Math.max(y, 0), height - 1);
+			                    const idx = (y * width + x) * 4;
+			                    return (data[idx] << 16) | (data[idx + 1] << 8) | data[idx + 2];
+			                }
+
+			                for (let y = 0; y < height; y++) {
+			                    for (let x = 0; x < width; x++) {
+			                        const idx = y * width + x;
+			                        if (segments[idx] === 0) {
+			                            const color = getColor(x, y);
+			                            const stack = [[x, y]];
+			                            while (stack.length > 0) {
+			                                const [px, py] = stack.pop();
+			                                if (px < 0 || px >= width || py < 0 || py >= height || segments[py * width + px] !== 0) continue;
+			                                if (Math.abs(getColor(px, py) - color) < 10) {
+			                                    segments[py * width + px] = segmentId;
+			                                    stack.push([px + 1, py], [px - 1, py], [px, py + 1], [px, py - 1]);
+			                                }
+			                            }
+			                            segmentId++;
+			                        }
+			                    }
+			                    if (y % Math.floor(height / 10) === 0) {
+			                        self.postMessage({ type: 'progress', progress: (y / height) * 15, data: data.slice(), width, height });
+			                    }
+			                }
+			                return { data: data, segments: segments, width, height };
+			            }
+
+			            function preSmooth(imageData, segments) {
+			                console.log('Starting pre-smoothing...');
+			                const width = imageData.width;
+			                const height = imageData.height;
+			                const data = new Uint8ClampedArray(imageData.data);
+			                const output = new Uint8ClampedArray(data.length);
+			                const sigma = 6.0;
+			                const kernelSize = 7;
+			                const kernel = [];
+			                let sum = 0;
+
+			                for (let y = -kernelSize; y <= kernelSize; y++) {
+			                    for (let x = -kernelSize; x <= kernelSize; x++) {
+			                        const weight = Math.exp(-(x * x + y * y) / (2 * sigma * sigma)) / (2 * Math.PI * sigma * sigma);
+			                        kernel.push(weight);
+			                        sum += weight;
+			                    }
+			                }
+			                for (let i = 0; i < kernel.length; i++) kernel[i] /= sum;
+
+			                function getPixel(x, y) {
+			                    x = Math.min(Math.max(x, 0), width - 1);
+			                    y = Math.min(Math.max(y, 0), height - 1);
+			                    const idx = (y * width + x) * 4;
+			                    return [data[idx], data[idx + 1], data[idx + 2], data[idx + 3]];
+			                }
+
+			                function getSegment(x, y) {
+			                    x = Math.min(Math.max(x, 0), width - 1);
+			                    y = Math.min(Math.max(y, 0), height - 1);
+			                    return segments[y * width + x];
+			                }
+
+			                for (let y = 0; y < height; y++) {
+			                    for (let x = 0; x < width; x++) {
+			                        const idx = (y * width + x) * 4;
+			                        const currentSegment = getSegment(x, y);
+			                        let r = 0, g = 0, b = 0, a = 0, weightSum = 0;
+			                        let k = 0;
+
+			                        for (let ky = -kernelSize; ky <= kernelSize; ky++) {
+			                            for (let kx = -kernelSize; kx <= kernelSize; kx++) {
+			                                const px = x + kx;
+			                                const py = y + ky;
+			                                if (px >= 0 && px < width && py >= 0 && py < height && getSegment(px, py) === currentSegment) {
+			                                    const pixel = getPixel(px, py);
+			                                    const weight = kernel[k];
+			                                    r += pixel[0] * weight;
+			                                    g += pixel[1] * weight;
+			                                    b += pixel[2] * weight;
+			                                    a += pixel[3] * weight;
+			                                    weightSum += weight;
+			                                }
+			                                k++;
+			                            }
+			                        }
+			                        output[idx] = weightSum > 0 ? r / weightSum : data[idx];
+			                        output[idx + 1] = weightSum > 0 ? g / weightSum : data[idx + 1];
+			                        output[idx + 2] = weightSum > 0 ? b / weightSum : data[idx + 2];
+			                        output[idx + 3] = weightSum > 0 ? a / weightSum : data[idx + 3];
+			                    }
+			                    if (y % Math.floor(height / 10) === 0) {
+			                        self.postMessage({ type: 'progress', progress: 15 + (y / height) * 15, data: output.slice(), width, height });
+			                    }
+			                }
+			                return { data: output, segments: segments, width, height };
+			            }
+
+			            function traceEdges(imageData, segments) {
+			                console.log('Starting edge tracing...');
+			                const width = imageData.width;
+			                const height = imageData.height;
+			                const data = new Uint8ClampedArray(imageData.data);
+			                const edges = new Uint8ClampedArray(width * height);
+
+			                function getBrightness(x, y) {
+			                    x = Math.min(Math.max(x, 0), width - 1);
+			                    y = Math.min(Math.max(y, 0), height - 1);
+			                    const idx = (y * width + x) * 4;
+			                    return 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
+			                }
+
+			                function getSegment(x, y) {
+			                    x = Math.min(Math.max(x, 0), width - 1);
+			                    y = Math.min(Math.max(y, 0), height - 1);
+			                    return segments[y * width + x];
+			                }
+
+			                for (let y = 1; y < height - 1; y++) {
+			                    for (let x = 1; x < width - 1; x++) {
+			                        const idx = y * width + x;
+			                        const gx = (
+			                            -getBrightness(x - 1, y - 1) + getBrightness(x + 1, y - 1) +
+			                            -2 * getBrightness(x - 1, y) + 2 * getBrightness(x + 1, y) +
+			                            -getBrightness(x - 1, y + 1) + getBrightness(x + 1, y + 1)
+			                        );
+			                        const gy = (
+			                            -getBrightness(x - 1, y - 1) + -2 * getBrightness(x, y - 1) + -getBrightness(x + 1, y - 1) +
+			                            getBrightness(x - 1, y + 1) + 2 * getBrightness(x, y + 1) + getBrightness(x + 1, y + 1)
+			                        );
+			                        const gradient = Math.sqrt(gx * gx + gy * gy);
+			                        const segmentDiff = (
+			                            getSegment(x, y) !== getSegment(x + 1, y) ||
+			                            getSegment(x, y) !== getSegment(x, y + 1) ||
+			                            getSegment(x, y) !== getSegment(x - 1, y) ||
+			                            getSegment(x, y) !== getSegment(x, y - 1)
+			                        ) ? 255 : 0;
+			                        edges[idx] = Math.min(255, Math.max(gradient, segmentDiff));
+			                    }
+			                    if (y % Math.floor(height / 10) === 0) {
+			                        self.postMessage({ type: 'progress', progress: 30 + (y / height) * 15, data: data.slice(), width, height });
+			                    }
+			                }
+			                return { data: data, edges: edges, segments: segments, width, height };
+			            }
+
+			            function hybridInterpolate(imageData, edges, segments) {
+			                console.log('Starting hybrid interpolation...');
+			                const width = imageData.width;
+			                const height = imageData.height;
+			                const data = new Uint8ClampedArray(imageData.data);
+			                const scale = 4;
+			                const newWidth = width * scale;
+			                const newHeight = height * scale;
+			                const output = new Uint8ClampedArray(newWidth * newHeight * 4);
+
+			                function getPixel(x, y) {
+			                    x = Math.min(Math.max(x, 0), width - 1);
+			                    y = Math.min(Math.max(y, 0), height - 1);
+			                    const idx = (y * width + x) * 4;
+			                    return [data[idx], data[idx + 1], data[idx + 2], data[idx + 3]];
+			                }
+
+			                function getEdgeStrength(x, y) {
+			                    x = Math.min(Math.max(x, 0), width - 1);
+			                    y = Math.min(Math.max(y, 0), height - 1);
+			                    return edges[y * width + x] / 255;
+			                }
+
+			                function getSegment(x, y) {
+			                    x = Math.min(Math.max(x, 0), width - 1);
+			                    y = Math.min(Math.max(y, 0), height - 1);
+			                    return segments[y * width + x];
+			                }
+
+			                function bicubicWeight(t) {
+			                    t = Math.abs(t);
+			                    if (t <= 1) return (1.5 * t * t * t) - (2.5 * t * t) + 1;
+			                    if (t <= 2) return (-0.5 * t * t * t) + (2.5 * t * t) - (4 * t) + 2;
+			                    return 0;
+			                }
+
+			                function interpolate(x, y) {
+			                    const srcX = x / scale;
+			                    const srcY = y / scale;
+			                    const x0 = Math.floor(srcX);
+			                    const y0 = Math.floor(srcY);
+			                    const edgeStrength = getEdgeStrength(x0, y0);
+
+			                    if (edgeStrength > 0.7) {
+			                        return getPixel(x0, y0);
+			                    } else {
+			                        let r = 0, g = 0, b = 0, a = 0, weightSum = 0;
+			                        const currentSegment = getSegment(x0, y0);
+
+			                        for (let ky = -3; ky <= 3; ky++) { // Увеличен радиус интерполяции
+			                            for (let kx = -3; kx <= 3; kx++) {
+			                                const px = x0 + kx;
+			                                const py = y0 + ky;
+			                                if (px >= 0 && px < width && py >= 0 && py < height && getSegment(px, py) === currentSegment) {
+			                                    const pixel = getPixel(px, py);
+			                                    const dx = srcX - px;
+			                                    const dy = srcY - py;
+			                                    const weight = bicubicWeight(dx) * bicubicWeight(dy);
+			                                    r += pixel[0] * weight;
+			                                    g += pixel[1] * weight;
+			                                    b += pixel[2] * weight;
+			                                    a += pixel[3] * weight;
+			                                    weightSum += weight;
+			                                }
+			                            }
+			                        }
+			                        return [
+			                            Math.min(255, Math.max(0, weightSum > 0 ? r / weightSum : getPixel(x0, y0)[0])),
+			                            Math.min(255, Math.max(0, weightSum > 0 ? g / weightSum : getPixel(x0, y0)[1])),
+			                            Math.min(255, Math.max(0, weightSum > 0 ? b / weightSum : getPixel(x0, y0)[2])),
+			                            Math.min(255, Math.max(0, weightSum > 0 ? a / weightSum : getPixel(x0, y0)[3]))
+			                        ];
+			                    }
+			                }
+
+			                for (let y = 0; y < newHeight; y++) {
+			                    for (let x = 0; x < newWidth; x++) {
+			                        const outIdx = (y * newWidth + x) * 4;
+			                        const color = interpolate(x, y);
+			                        output[outIdx] = color[0];
+			                        output[outIdx + 1] = color[1];
+			                        output[outIdx + 2] = color[2];
+			                        output[outIdx + 3] = color[3];
+			                    }
+			                    if (y % Math.floor(newHeight / 10) === 0) {
+			                        self.postMessage({ type: 'progress', progress: 45 + (y / newHeight) * 15, data: output.slice(), width: newWidth, height: newHeight });
+			                    }
+			                }
+			                return { data: output, edges: edges, width: newWidth, height: newHeight };
+			            }
+
+			            function iterativeBlur(imageData, edges) {
+			                console.log('Starting iterative blur...');
+			                const width = imageData.width;
+			                const height = imageData.height;
+			                let data = new Uint8ClampedArray(imageData.data);
+			                const output = new Uint8ClampedArray(data.length);
+			                const sigmas = [2.5, 3.5];
+
+			                function getPixel(x, y) {
+			                    x = Math.min(Math.max(x, 0), width - 1);
+			                    y = Math.min(Math.max(y, 0), height - 1);
+			                    const idx = (y * width + x) * 4;
+			                    return [data[idx], data[idx + 1], data[idx + 2], data[idx + 3]];
+			                }
+
+			                function getEdgeStrength(x, y) {
+			                    x = Math.min(Math.max(x / 4, 0), width / 4 - 1);
+			                    y = Math.min(Math.max(y / 4, 0), height / 4 - 1);
+			                    return edges[Math.floor(y) * Math.floor(width / 4) + Math.floor(x)] / 255;
+			                }
+
+			                for (let pass = 0; pass < sigmas.length; pass++) {
+			                    const sigma = sigmas[pass];
+			                    const kernel = [];
+			                    let sum = 0;
+
+			                    for (let ky = -3; ky <= 3; ky++) {
+			                        for (let kx = -3; kx <= 3; kx++) {
+			                            const weight = Math.exp(-(kx * kx + ky * ky) / (2 * sigma * sigma)) / (2 * Math.PI * sigma * sigma);
+			                            kernel.push(weight);
+			                            sum += weight;
+			                        }
+			                    }
+			                    for (let i = 0; i < kernel.length; i++) kernel[i] /= sum;
+
+			                    for (let y = 0; y < height; y++) {
+			                        for (let x = 0; x < width; x++) {
+			                            const idx = (y * width + x) * 4;
+			                            const edgeStrength = getEdgeStrength(x, y);
+			                            if (edgeStrength > 0.1) {
+			                                output[idx] = data[idx];
+			                                output[idx + 1] = data[idx + 1];
+			                                output[idx + 2] = data[idx + 2];
+			                                output[idx + 3] = data[idx + 3];
+			                            } else {
+			                                let r = 0, g = 0, b = 0, a = 0;
+			                                let k = 0;
+			                                for (let ky = -3; ky <= 3; ky++) {
+			                                    for (let kx = -3; kx <= 3; kx++) {
+			                                        const pixel = getPixel(x + kx, y + ky);
+			                                        const weight = kernel[k++];
+			                                        r += pixel[0] * weight;
+			                                        g += pixel[1] * weight;
+			                                        b += pixel[2] * weight;
+			                                        a += pixel[3] * weight;
+			                                    }
+			                                }
+			                                output[idx] = r;
+			                                output[idx + 1] = g;
+			                                output[idx + 2] = b;
+			                                output[idx + 3] = a;
+			                            }
+			                        }
+			                        if (pass === 0 && y % Math.floor(height / 10) === 0) {
+			                            self.postMessage({ type: 'progress', progress: 60 + (y / height) * 15, data: output.slice(), width, height });
+			                        }
+			                    }
+			                    data = new Uint8ClampedArray(output);
+			                }
+			                return { data: output, edges: edges, width, height };
+			            }
+
+			            function sharpenImage(imageData, edges) {
+			                console.log('Starting sharpening...');
+			                const width = imageData.width;
+			                const height = imageData.height;
+			                const data = new Uint8ClampedArray(imageData.data);
+			                const output = new Uint8ClampedArray(data.length);
+			                const amount = 0.7;
+			                const radius = 1;
+			                const threshold = 20;
+
+			                function getPixel(x, y) {
+			                    x = Math.min(Math.max(x, 0), width - 1);
+			                    y = Math.min(Math.max(y, 0), height - 1);
+			                    const idx = (y * width + x) * 4;
+			                    return [data[idx], data[idx + 1], data[idx + 2]];
+			                }
+
+			                function getEdgeStrength(x, y) {
+			                    x = Math.min(Math.max(x / 4, 0), width / 4 - 1);
+			                    y = Math.min(Math.max(y / 4, 0), height / 4 - 1);
+			                    return edges[Math.floor(y) * Math.floor(width / 4) + Math.floor(x)] / 255;
+			                }
+
+			                for (let y = 0; y < height; y++) {
+			                    for (let x = 0; x < width; x++) {
+			                        const idx = (y * width + x) * 4;
+			                        const edgeStrength = getEdgeStrength(x, y);
+			                        if (edgeStrength > 0.15) {
+			                            let r = 0, g = 0, b = 0, count = 0;
+
+			                            for (let ky = -radius; ky <= radius; ky++) {
+			                                for (let kx = -radius; kx <= radius; kx++) {
+			                                    const pixel = getPixel(x + kx, y + ky);
+			                                    r += pixel[0];
+			                                    g += pixel[1];
+			                                    b += pixel[2];
+			                                    count++;
+			                                }
+			                            }
+
+			                            const blurR = r / count;
+			                            const blurG = g / count;
+			                            const blurB = b / count;
+
+			                            const diffR = data[idx] - blurR;
+			                            const diffG = data[idx + 1] - blurG;
+			                            const diffB = data[idx + 2] - blurB;
+
+			                            output[idx] = Math.abs(diffR) > threshold
+			                                ? Math.min(255, Math.max(0, data[idx] + diffR * amount))
+			                                : data[idx];
+			                            output[idx + 1] = Math.abs(diffG) > threshold
+			                                ? Math.min(255, Math.max(0, data[idx + 1] + diffG * amount))
+			                                : data[idx + 1];
+			                            output[idx + 2] = Math.abs(diffB) > threshold
+			                                ? Math.min(255, Math.max(0, data[idx + 2] + diffB * amount))
+			                                : data[idx + 2];
+			                        } else {
+			                            output[idx] = data[idx];
+			                            output[idx + 1] = data[idx + 1];
+			                            output[idx + 2] = data[idx + 2];
+			                        }
+			                        output[idx + 3] = 255;
+			                    }
+			                    if (y % Math.floor(height / 10) === 0) {
+			                        self.postMessage({ type: 'progress', progress: 75 + (y / height) * 15, data: output.slice(), width, height });
+			                    }
+			                }
+			                return { data: output, width, height };
+			            }
+
+			            function medianFilter(imageData) {
+			                console.log('Starting median filtering...');
+			                const width = imageData.width;
+			                const height = imageData.height;
+			                const data = new Uint8ClampedArray(imageData.data);
+			                const output = new Uint8ClampedArray(data.length);
+
+			                function getPixel(x, y) {
+			                    x = Math.min(Math.max(x, 0), width - 1);
+			                    y = Math.min(Math.max(y, 0), height - 1);
+			                    const idx = (y * width + x) * 4;
+			                    return [data[idx], data[idx + 1], data[idx + 2]];
+			                }
+
+			                function median(values) {
+			                    values.sort((a, b) => a - b);
+			                    return values[Math.floor(values.length / 2)];
+			                }
+
+			                for (let y = 0; y < height; y++) {
+			                    for (let x = 0; x < width; x++) {
+			                        const idx = (y * width + x) * 4;
+			                        let rValues = [], gValues = [], bValues = [];
+
+			                        for (let ky = -2; ky <= 2; ky++) {
+			                            for (let kx = -2; kx <= 2; kx++) {
+			                                const pixel = getPixel(x + kx, y + ky);
+			                                rValues.push(pixel[0]);
+			                                gValues.push(pixel[1]);
+			                                bValues.push(pixel[2]);
+			                            }
+			                        }
+
+			                        output[idx] = median(rValues);
+			                        output[idx + 1] = median(gValues);
+			                        output[idx + 2] = median(bValues);
+			                        output[idx + 3] = 255;
+			                    }
+			                    if (y % Math.floor(height / 10) === 0) {
+			                        self.postMessage({ type: 'progress', progress: 85 + (y / height) * 15, data: output.slice(), width, height });
+			                    }
+			                }
+			                return { data: output, width, height };
+			            }
+
+			            self.onmessage = function(e) {
+			                try {
+			                    console.log('Worker received message');
+			                    const { imageData } = e.data;
+			                    if (!imageData || !imageData.data) throw new Error('No valid image data');
+
+			                    const segmented = colorSegmentation(imageData);
+			                    self.postMessage({ type: 'log', message: 'Color segmentation completed' });
+
+			                    const smoothed = preSmooth(segmented, segmented.segments);
+			                    self.postMessage({ type: 'log', message: 'Pre-smoothing completed' });
+
+			                    const traced = traceEdges(smoothed, smoothed.segments);
+			                    self.postMessage({ type: 'log', message: 'Edge tracing completed' });
+
+			                    const interpolated = hybridInterpolate(traced, traced.edges, traced.segments);
+			                    self.postMessage({ type: 'log', message: 'Hybrid interpolation completed' });
+
+			                    const blurred = iterativeBlur(interpolated, traced.edges);
+			                    self.postMessage({ type: 'log', message: 'Iterative blur completed' });
+
+			                    const sharpened = sharpenImage(blurred, traced.edges);
+			                    self.postMessage({ type: 'log', message: 'Sharpening completed' });
+
+			                    const filtered = medianFilter(sharpened);
+			                    self.postMessage({ type: 'log', message: 'Median filtering completed' });
+
+			                    self.postMessage({
+			                        type: 'result',
+			                        data: filtered.data,
+			                        width: filtered.width,
+			                        height: filtered.height
+			                    });
+			                } catch (error) {
+			                    self.postMessage({ type: 'error', message: error.message });
+			                }
+			            };
+			        `,
+								],
+								{ type: 'application/javascript' }
+							)
+						)
+					);
+
+					this.worker.onmessage = e => {
+						console.log('Main thread received message:', e.data.type);
+						if (e.data.type === 'progress') {
+							this.processedCtx.putImageData(
+								new ImageData(
+									new Uint8ClampedArray(e.data.data),
+									e.data.width,
+									e.data.height
+								),
+								0,
+								0
+							);
+							this.progressElement.textContent = `Обработка: ${Math.round(
+								e.data.progress
+							)}%`;
+						} else if (e.data.type === 'result') {
+							this.processedCtx.putImageData(
+								new ImageData(
+									new Uint8ClampedArray(e.data.data),
+									e.data.width,
+									e.data.height
+								),
+								0,
+								0
+							);
+							this.progressElement.textContent = 'Обработка: Завершена!';
+							console.log('Result displayed');
+						} else if (e.data.type === 'log') {
+							console.log('Worker log:', e.data.message);
+						} else if (e.data.type === 'error') {
+							console.error('Worker error:', e.data.message);
+							this.progressElement.textContent = `Error: ${e.data.message}`;
+						}
+					};
+
+					this.worker.onerror = error => {
+						console.error('Worker failed:', error.message);
+						this.progressElement.textContent = `Worker Error: ${error.message}`;
+					};
+
+					this.progressElement.textContent = 'Обработка: Началась';
+					console.log(
+						'Sending data to worker:',
+						this.originalData.width,
+						this.originalData.height
+					);
+					this.worker.postMessage({ imageData: this.originalData });
+				}
+			}
+
+			const processor = new ImageProcessor('originalCanvas', 'processedCanvas');
+		</script>
+	</body>
+</html>
